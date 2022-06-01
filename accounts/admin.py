@@ -10,7 +10,7 @@ class AccountInline(admin.StackedInline):
     verbose_name_plura = 'Accounts'
 
 
-class CustomizedUserAdmin (UserAdmin):
+class CustomizedUserAdmin(UserAdmin):
     inlines = (AccountInline, )
 
 

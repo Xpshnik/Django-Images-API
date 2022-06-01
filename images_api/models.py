@@ -1,20 +1,26 @@
-from django.conf import settings
 from django.db import models
-from django.core.validators import FileExtensionValidator
+from accounts.models import UserAccount
+from .validators import validate_is_png_or_jpg
 
 # Create your models here.
 
-class Image(models.Model):
-    owner = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE) #I may end up using customized User model here, so possibly change later
-    fullsize_image = models.ImageField(
-        upload_to=f'images/user_{owner}/fullsize/%Y/%m/%d',    #TIL {owner:05} doesn't work here
-        validators=[FileExtensionValidator(['png', 'jpg', 'jpeg'])]
-        )
+def upload_to(instance, filename):
+    if isinstance(instance, UploadedImage):
+        return f'images/user_{instance.owner.pk:05}/fullsize/{filename}'
+    elif isinstance(instance, Thumbnail):
+        return f'images/user_{instance.original_image.owner.pk:05}/thumbnail_{instance.height}px/{filename}'
 
 
-""" class Thumbnail(models.Model):
-    original_image = models.ForeignKey('Image', related_name='thumbnails' on_delete=models.CASCADE)
-    thumbnail = models.ImageField(upload_to=None, height_field=None)
-    height = models.IntegerField() """
+class UploadedImage(models.Model):
+    owner = models.ForeignKey(UserAccount, on_delete=models.CASCADE)
+    fullsize_image = models.ImageField(upload_to=upload_to, validators=[validate_is_png_or_jpg])
 
-    #validate if height is less than the original?
+
+class Thumbnail(models.Model):
+    original_image = models.ForeignKey('UploadedImage', related_name='thumbnails', on_delete=models.CASCADE)
+    thumbnail = models.ImageField(upload_to=upload_to)
+    height = models.IntegerField()
+
+    #validate if the resulting height is less than the original?
+    def __str__(self):
+        return f'{self.height}px_thumbnail'

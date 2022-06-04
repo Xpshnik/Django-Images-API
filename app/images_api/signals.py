@@ -22,8 +22,6 @@ def make_thumbnails(sender, instance, **kwargs):
         ])
         instance._thumbnail_drafts = jobs.apply_async()
 
-    """instance.owner.tier or instance.owner.tier.thumbnail_heights changed?"""
-
 
 @receiver(post_save, sender=UploadedImage)
 def initiate_thumbnails(sender, instance, created, **kwargs):

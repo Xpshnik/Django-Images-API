@@ -1,10 +1,11 @@
 from rest_framework import generics, permissions
+from rest_framework.response import Response
 from .serializers import ImageSerializer
 from .models import UploadedImage
 
 class ImageListCreateAPIView(generics.ListCreateAPIView):
     serializer_class = ImageSerializer
-    permission_classes = [permissions.IsAuthenticated]
+    permission_classes = (permissions.IsAuthenticated, )
 
     def get_queryset(self):
         return UploadedImage.objects.filter(owner=self.request.user.useraccount)

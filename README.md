@@ -2,10 +2,26 @@
 
 ## Quick setup:
 
-### Build the project:
+First of all, open your terminal in the project folder you've just cloned. Make sure your Docker is running, is up-to-date and added to PATH, otherwise after running the next command you're likely to get a not very helpful error message like:
+```bash
+pywintypes.error: (2, 'CreateFile', 'The system cannot find the file specified.')
+```
+
+### To build the project run:
 ```bash
 docker-compose up --build
 ```
+
+With dockerized postgres things sometimes go wrong. If you get the following error:
+```
+django.db.utils.OperationalError: connection to server at "db" (*some_ip*), port 5432 failed: Connection refused
+app_1     |     Is the server running on that host and accepting TCP/IP connections?
+```
+then just run:
+```bash
+docker-compose down -v
+```
+to get rid of the volume created after the first command run and then rerun the initial compose command once more.
 
 ### Create a superuser:
 ```bash
